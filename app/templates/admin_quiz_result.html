@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Admins Quiz Result{% endblock %}
+{% block css %} 
+<link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container ">
+    <h2>{{ quiz.name }} - Results</h2>
+    <div class="card p-3 mb-3 shadow-lg" style="background-color: rgba(31, 29, 29, 0.933);border-radius: 10px;
+    border: none;">
+        <h3 class="text-warning ">Score: {{ score }}/{{ total_questions }}</h3>
+    </div>
+
+    {% for question, selected_answer, is_correct in results %}
+    <div class="card mb-4">
+        <div class="card-body question-card ">
+            <h5 class="card-title">{{ question.question }}</h5>
+            <div class="my-2">
+                {% if selected_answer is none %}
+                    <span class="badge bg-secondary"><i class="fas fa-exclamation-circle"></i> Unattempted</span>
+                {% elif is_correct %}
+                    <span class="badge bg-success"><i class="fas fa-check"></i> Correct</span>
+                {% else %}
+                    <span class="badge bg-danger"><i class="fas fa-times"></i> Incorrect</span>
+                {% endif %}
+            </div>
+            <ul class="list-group">
+                {% for option, label in [('1', question.choice_A), ('2', question.choice_B), ('3', question.choice_C), ('4', question.choice_D)] %}
+                
+                <!-- colors for options -->
+                <label class="list-group-item text-white
+                    {% if selected_answer == option %} 
+                        {% if is_correct %} bg-success {% else %} bg-danger {% endif %}
+                    {% elif option == question.correct_answer and not is_correct %}
+                        bg-success
+                    {% endif %}
+                "> 
+                    {{ label }}
+                    <span class="ms-auto">
+                        {% if selected_answer == option %}
+                            {% if is_correct %}
+                                <i class="fas fa-check-circle"></i>
+                            {% else %}
+                                <i class="fas fa-times-circle"></i> 
+                            {% endif %}
+                        {% endif %}
+                    </span>
+                </label>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endfor %}
+    <div class="d-flex justify-content-center gap-3">
+        <a href="{{ url_for('admin.admin_users') }}" class="btn btn-primary mx-auto my-5">{{button_text}}</a>
+    </div>
+</div>
+{% endblock %}

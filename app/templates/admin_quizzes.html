@@ -1,0 +1,311 @@
+{% extends "base.html" %} 
+
+{% block title %}Admin - Quizzes{% endblock %} 
+
+{% block css %} 
+<link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Add Quiz Modal -->
+<div class="modal fade" id="addQuizModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Add Quiz</h1>
+                <button type="button" class="btn-close" data-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('admin.add_quiz') }}">
+                {{ quizForm.hidden_tag() }}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        {{ quizForm.name.label(class="form-label") }}
+                        {{ quizForm.name(class="form-control") }}
+                    </div>
+                    <!-- Subject Dropdown -->
+                    <div class="mb-3 ">
+                        <label for="subject">Select Subject:</label>
+                        <select id="subject" name="subject" class="form-select btn btn-secondary dropdown-toggle btn-sm bg-light text-dark">
+                            <option value="">-- Select Subject --</option>
+                            {% for subject in subjects %}
+                            <option value="{{ subject.id }}">{{ subject.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Chapter Dropdown -->
+                    <div class="mb-3">
+                        <label for="chapter">Select Chapter:</label>
+                        <select id="chapter" name="chapter" class="form-select btn btn-secondary dropdown-toggle btn-sm bg-light text-dark" disabled>
+                            <option value="">-- Select Chapter --</option>
+                        </select>
+                    </div>
+
+                    <!-- Due Date Field -->
+                    <div class="mb-3">
+                        {{ quizForm.date.label(class="form-label") }}
+                        {{ quizForm.date(class="form-control" ,placeholder="YYYY-MM-DD", type="date") }}
+                    </div>
+
+                    <!-- Time Limit Field -->
+                    <div class="mb-3">
+                        <label for="time_limit">Time Limit:</label>
+                        <div class="d-flex gap-2">
+                            {{ quizForm.time_limit_hours(class="form-select btn btn-secondary dropdown-toggle btn-sm bg-light text-dark mr-1") }}
+                            <span class="text-light mr-3">Hours</span>
+                            <br>
+                            {{ quizForm.time_limit_minutes(class="form-select btn btn-secondary dropdown-toggle btn-sm bg-light text-dark mr-1") }}
+                            <span class="text-light mr-3">Minutes</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    {{ quizForm.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Quizzes List -->
+<div class="container admin-container" style="position: absolute; top: 140px;">
+    <div class="card-container-header px-3 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 mt-2 text-light">{{heading}}</h5>
+        <a type="button" class="btn btn-light add-btn text-dark" data-toggle="modal" data-target="#addQuizModal">
+            <span id="addQuizButton">+ Quiz</span>
+        </a>
+    </div>
+    <div class="card shadow-lg p-3" style="background-color: transparent;">
+        {% if quizzes %}
+        <div class="row">
+            {% for quiz in quizzes %}
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+                    <div class="card subject-cards">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ quiz.name }}</strong>
+                                <br>
+                                <small class=" text-dark">Date of Quiz: {{ quiz.date.strftime('%Y-%m-%d')}}</small>
+                                <br>
+                                <small class="text-dark">Time Limit: {{ quiz.time_limit // 60 }}h {{ quiz.time_limit % 60 }}m</small>
+                            </div>
+
+                            <div class="d-flex " style="gap : 15px;">
+                                <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editQuiz{{ quiz.id }}">
+                                    Edit
+                                </button>
+                                <form method="POST" action="{{ url_for('admin.delete_quiz', quiz_id=quiz.id) }}" 
+                                style="display:inline;">
+                                {{ deleteForm.hidden_tag() }}
+                                {{ deleteForm.submit(class="btn btn-danger btn-sm", onclick="return confirm('Are you sure?')") }}
+                                </form>
+                                <button class="btn btn-light text-dark shadow-sm btn-sm" data-toggle="modal" data-target="#addQuestion{{quiz.id}}">
+                                    + Question
+                                </button>
+                            </div>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <div class="question-rows">
+                                {% if quiz.question%}
+                                <ul class="list-group list-group-flush">
+                                    {% for question in quiz.question %}
+                                        <li class="list-group-item chapter-name-row text-dark d-flex justify-content-between align-items-center" style="background-color: rgb(217, 213, 213);">
+                                            <span>
+                                                {{ question.question }}
+                                            </span>
+                                            <div class="d-flex " style="gap : 15px;">
+                                                <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editQuestion{{ question.id }}">
+                                                    Edit
+                                                </button>
+                                                <form method="POST" action="{{ url_for('admin.delete_question', question_id=question.id) }}" 
+                                                style="display:inline;">
+                                                {{ deleteForm.hidden_tag() }}
+                                                {{ deleteForm.submit(class="btn btn-danger btn-sm", onclick="return confirm('Are you sure?')") }}
+                                            </form>
+                                        </div>
+                                    </li>
+
+
+                                    <!-- edit question modal  -->
+                                    <div class="modal fade" id="editQuestion{{ question.id }}" tabindex="-1">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content bg-dark text-white">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5">Edit Question</h1>
+                                                    <button type="button" class="btn-close" data-dismiss="modal"></button>
+                                                </div>
+                                                <form method="POST" action="{{ url_for('admin.edit_question', question_id=question.id) }}">
+                                                    {{ questionEditForm.hidden_tag() }}
+                                                    <div class="modal-body">
+                                                        <div class="mb-3">
+                                                            {{ questionEditForm.name.label(class="form-label") }}
+                                                            {{ questionEditForm.name(class="form-control") }}
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            {{ questionEditForm.option_1.label(class="form-label") }}
+                                                            {{ questionEditForm.option_1(class="form-control") }}
+                                                        </div> 
+                                                        <div class="mb-3">
+                                                            {{ questionEditForm.option_2.label(class="form-label") }}
+                                                            {{ questionEditForm.option_2(class="form-control") }}
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            {{ questionEditForm.option_3.label(class="form-label") }}
+                                                            {{ questionEditForm.option_3(class="form-control") }}
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            {{ questionEditForm.option_4.label(class="form-label") }}
+                                                            {{ questionEditForm.option_4(class="form-control") }}
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            {{ questionEditForm.correct_answer.label(class="form-label") }}
+                                                            {{ questionEditForm.correct_answer(class="form-select form-control") }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                        {{ questionEditForm.submit(class="btn btn-primary") }}
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {% endfor %}
+                                </ul>
+                                {% else %}
+                                <li class="text-center py-1">
+                                    <h5 class="text-muted">No questions added.</h5>
+                                </li>
+                                {%endif%}
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+
+
+                <!-- add question modal  -->
+                <div class="modal fade" id="addQuestion{{quiz.id}}" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content bg-dark text-white">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5">Add Question</h1>
+                                <button type="button" class="btn-close" data-dismiss="modal"></button>
+                            </div>
+                            <form method="POST" action="{{ url_for('admin.add_question', quiz_id=quiz.id) }}">
+                                {{ questionForm.hidden_tag() }}
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        {{ questionForm.name.label(class="form-label") }}
+                                        {{ questionForm.name(class="form-control") }}
+                                    </div>
+                                    <div class="mb-3">
+                                        {{ questionForm.option_1.label(class="form-label") }}
+                                        {{ questionForm.option_1(class="form-control") }}
+                                    </div> 
+                                    <div class="mb-3">
+                                        {{ questionForm.option_2.label(class="form-label") }}
+                                        {{ questionForm.option_2(class="form-control") }}
+                                    </div>
+                                    <div class="mb-3">
+                                        {{ questionForm.option_3.label(class="form-label") }}
+                                        {{ questionForm.option_3(class="form-control") }}
+                                    </div>
+                                    <div class="mb-3">
+                                        {{ questionForm.option_4.label(class="form-label") }}
+                                        {{ questionForm.option_4(class="form-control") }}
+                                    </div>
+                                    <div class="mb-3">
+                                        {{ questionForm.correct_answer.label(class="form-label") }}
+                                        {{ questionForm.correct_answer(class="form-select form-control") }}
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    {{ questionForm.submit(class="btn btn-primary") }}
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="editQuiz{{ quiz.id }}" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content bg-dark text-white">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5">Edit Quiz</h1>
+                                <button type="button" class="btn-close" data-dismiss="modal"></button>
+                            </div>
+                            <form method="POST" action="{{ url_for('admin.edit_quiz', quiz_id=quiz.id) }}">
+                                {{ quizEditForm.hidden_tag() }}
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        {{ quizEditForm.name.label(class="form-label") }}
+                                        {{ quizEditForm.name(class="form-control") }}
+                                    </div>
+                                    <div class="mb-3">
+                                        {{ quizEditForm.date.label(class="form-label") }}
+                                        {{ quizEditForm.date(class="form-control", placeholder="YYYY-MM-DD", value=quiz.date.strftime('%Y-%m-%d'),type="date") }}
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="time_limit">Time Limit:</label>
+                                        <div class="d-flex gap-2">
+                                            {{ quizEditForm.time_limit_hours(class="form-select btn btn-secondary dropdown-toggle btn-sm bg-light text-dark mr-1") }}
+                                            <span class="text-light mr-2">Hours</span>
+                                            {{ quizEditForm.time_limit_minutes(class="form-select btn btn-secondary dropdown-toggle btn-sm bg-light text-dark mr-1") }}
+                                            <span class="text-light mr-2">Minutes</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    {{ quizEditForm.submit(class="btn btn-primary") }}
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <h5 class="text-muted">No quizzes added.</h5>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+
+<!-- JS for drop down functionality of add subject and add chapters  -->
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        //using json to get info on chapters by subjects
+        let chaptersBySubject = {{ chapters_by_subject | tojson | safe }};
+
+        
+        let subjectDropdown = document.getElementById("subject");
+        let chapterDropdown = document.getElementById("chapter");
+        
+        subjectDropdown.addEventListener("change", function () {
+            let subjectId = this.value;
+
+            chapterDropdown.innerHTML = "<option value=''>-- Select Chapter --</option>";
+            
+            if (subjectId && chaptersBySubject[subjectId]) {
+                chaptersBySubject[subjectId].forEach(chapter => {
+                    let option = document.createElement("option");
+                    option.value = chapter[0];
+                    option.textContent = chapter[1];
+                    chapterDropdown.appendChild(option);
+                });
+                chapterDropdown.disabled = false;
+            } else {
+                chapterDropdown.disabled = true; 
+            }
+        });
+    });
+</script>
+{% endblock %}

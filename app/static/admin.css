@@ -1,0 +1,10 @@
+/* overflow is not needed for all pages and since the style.css file is taken up by base.html all of the base extending pages will have overflow as hidden. Hence exclusivly defining overflow as visiblefor pages that require them */
+
+body{
+     overflow:visible;
+}
+
+
+.admin-container{
+     background-color: rgba(0, 0, 0, 0.6);
+}

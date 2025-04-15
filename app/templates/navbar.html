@@ -1,0 +1,110 @@
+{% block navbar %}
+
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+    <a class="navbar-brand cursive" href="#">Quizzer</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-toggle="collapse"
+      data-target="#navbar"
+    >
+    <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse d-flex justify-content-between" id="navbar">
+      <div class="navbar-nav text-lightgrey">
+        <!-- admin login -->
+      {% if current_user.is_admin %} 
+        {%if request.path == '/admin-quizzes'%}
+        <a class="nav-item nav-link" id="users" href="/admin-users">Users</a>
+        <a class="nav-item nav-link" id="subjects" href="/admin-dashboard">Subjects</a>
+
+        {%elif request.path == '/admin-dashboard'%}
+        <a class="nav-item nav-link" id="users" href="/admin-users">Users</a>
+        <a class="nav-item nav-link" id="quizzes" href="/admin-quizzes">Quizzes</a>
+        
+        {%elif request.path == '/admin-users'%}
+        <a class="nav-item nav-link" id="subjects" href="/admin-dashboard">Subjects</a>
+        <a class="nav-item nav-link" id="quizzes" href="/admin-quizzes">Quizzes</a>
+        
+        {%elif '/quiz-result' in request.path %}
+        <a class="nav-item nav-link" id="subjects" href="/admin-dashboard">Subjects</a>
+        <a class="nav-item nav-link" id="quizzes" href="/admin-quizzes">Quizzes</a>
+        <a class="nav-item nav-link" id="users" href="/admin-users">Users</a>
+        {%elif '/search' in request.path %}
+        <a class="nav-item nav-link" id="subjects" href="/admin-dashboard">Subjects</a>
+        <a class="nav-item nav-link" id="quizzes" href="/admin-quizzes">Quizzes</a>
+        <a class="nav-item nav-link" id="users" href="/admin-users">Users</a>
+        {%endif%}
+
+        <!-- user login  -->
+      {% elif current_user.is_authenticated %}
+        {%if request.path == '/user-dashboard'%}  
+          <a class="nav-item nav-link" id="results" href="/user-result">Results</a>
+        
+        {%elif request.path == '/user-result'%}  
+        <a class="nav-item nav-link" id="results" href="/user-dashboard">Quizzes</a>
+        
+        {%elif '/quiz-result' in request.path %}  
+        <a class="nav-item nav-link" id="results" href="/user-dashboard">Quizzes</a>
+        <a class="nav-item nav-link" id="results" href="/user-result">Results</a>
+        {%elif '/search' in request.path %}
+        <a class="nav-item nav-link" id="subjects" href="/user-dashboard">Subjects</a>
+        <a class="nav-item nav-link" id="quizzes" href="/user-result">Results</a>
+        {%endif%}
+
+        <!-- not logged in yet  -->
+      {% elif request.path == '/' %}
+      <a class="nav-item nav-link" id="login" href="/login">Login</a>
+      <a class="nav-item nav-link" id="signup" href="/signup">Signup</a>
+      {% elif request.path == '/login'%}
+      <a class="nav-item nav-link" id="base" href="/">Home</a>
+      {%elif request.path == '/signup' %}
+      <a class="nav-item nav-link" id="base" href="/">Home</a>
+      {% endif %}
+    </div>
+    
+    <!-- search for admin  -->
+    {% if current_user.is_admin %}
+    <div class="nav-right">  
+      <form class="d-flex align-items-center justify-content-center" role="search" action="/search" method="GET">
+        <div class="dropdown">
+          <div class="col-auto pe-0">
+            <select class="form-select btn btn-secondary " name="table" required>
+              <option value="" selected disabled>Search By</option>
+              <option value="subject">Subject</option>
+              <option value="quizzes">Quiz</option>
+              <option value="users">User</option>
+            </select>
+          </div>
+          
+        </div>
+        <input class="form-control nav-item search-tab" name="query" type="search" placeholder="Search" required>
+        <button class="btn nav-item search-btn btn-primary" type="submit">Search</button>
+      </form>
+      <a class="nav-item nav-link text-white btn btn-danger" id="logout" href="/logout" onclick="return confirm('Are you sure?')">Logout</a>
+    </div>
+
+    <!-- search for users  -->
+    {% elif current_user.is_authenticated %}
+    <!-- no search bar inside the take quiz page -->
+    {%if not request.path.startswith('/take-quiz/')%} 
+    <div class="nav-right">  
+      <form class="d-flex align-items-center justify-content-center" role="search" action="/search" method="GET">
+          <input class="form-control nav-item search-tab" name="query" type="search" placeholder="Search for Subjects" required>
+          <button class="btn nav-item search-btn btn-primary" type="submit">Search</button>
+        </form>
+        <a class="nav-item nav-link text-white btn btn-danger" id="logout" href="/logout" onclick="return confirm('Are you sure?')">Logout</a>
+      </div>
+    {% endif %}   
+    {%endif%} 
+  </div>
+
+</nav>
+
+
+
+{% endblock %}
+
+
+
+

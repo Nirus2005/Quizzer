@@ -1,0 +1,85 @@
+{% extends "base.html" %} 
+{% block title %}User Dashboard{% endblock %} 
+
+{% block css %} 
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+    {% endblock %}
+
+
+
+{% block content %}
+<div class="container admin-container " style="position: absolute; top: 140px; ">
+    <div class="card-container-header px-3 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 mt-2 text-light" style="margin-top: 10px;">{{heading}}</h5>
+    </div>
+    <div class="card shadow-lg p-3" style="background-color: transparent;">
+        {% if available_quizzes or upcoming_quizzes %}
+        <div class="row">
+            {% for subject in subjects %}
+            {% if subject in available_quizzes or subject in upcoming_quizzes %}
+            <div class="col-lg-6 col-md-6 col-sm-12 mb-4"> 
+                    <div class="card subject-cards">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span>{{ subject.name }}</span>
+                        </div>
+                        {% if subject in available_quizzes %}
+                        <ul class="list-group list-group-flush">
+                            <div class="question-rows">
+                                <div class="list-group list-group-flush">
+                                    {% for quiz in available_quizzes[subject] %}
+                                        <div class="list-group-item chapter-name-row text-dark d-flex justify-content-between align-items-center" style="background-color: rgb(217, 213, 213);">
+                                            <strong>{{ quiz.name }}</strong>
+                                            <br>
+                                            <div>
+                                                <small class=" text-dark">Date of Quiz: {{ quiz.date.strftime('%Y-%m-%d')}}</small>
+                                                <br>
+                                                <small class="text-dark">Time Limit: {{ quiz.time_limit // 60 }}h {{ quiz.time_limit % 60 }}m</small>
+                                            </div>
+                                            <div class="d-flex " style="gap : 15px;">
+                                                <a href="{{ url_for('user.take_quiz', quiz_id=quiz.id) }}" class="btn btn-warning btn-sm" onclick="return confirm('Are you sure?')">
+                                                    Take Quiz
+                                                </a>
+                                            </div>
+                                    </div>
+                                    {%endfor%}
+                                </div>
+                            </div>
+                        </ul>
+                    {%endif%}
+                    {% if subject in upcoming_quizzes %}
+                        <ul class="list-group list-group-flush">
+                            <div class="question-rows">
+                                <div class="list-group list-group-flush">
+                                    {% for quiz in upcoming_quizzes[subject] %}
+                                        <div class="list-group-item chapter-name-row text-dark d-flex justify-content-between align-items-center" style="background-color: rgb(217, 213, 213);pointer-events:none;opacity:0.5;">
+                                            <strong class="text-muted">{{ quiz.name }}</strong>
+                                            <br>
+                                            <div>
+                                                <small class=" text-muted">Due Date: {{ quiz.date.strftime('%Y-%m-%d')}}</small>
+                                                <br>
+                                                <small class="text-muted">Time Limit: {{ quiz.time_limit // 60 }}h {{ quiz.time_limit % 60 }}m</small>
+                                            </div>
+                                            <div class="d-flex " style="gap : 15px;">
+                                                <a href="{{ url_for('user.take_quiz', quiz_id=quiz.id) }}" class="btn btn-warning btn-sm">
+                                                    Open Soon
+                                                </a>
+                                            </div>
+                                    </div>
+                                    {%endfor%}
+                                </div>
+                            </div>
+                        </ul>
+                    {%endif%}
+                    </div>
+                </div>
+                    {%endif%}
+            {%endfor%}
+        </div>
+        {%else%}
+        <li class="text-center py-1">
+            <h2 class="text-muted pt-5">No Available or Upcoming Quizzes</h2>
+        </li>
+        {%endif%}
+    </div>
+</div>
+{% endblock %}

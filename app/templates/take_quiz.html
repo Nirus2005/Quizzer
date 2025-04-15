@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Take Quiz{% endblock %}
+{% block css %} 
+<link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div id="timer-container">
+    <h3>Time Remaining 
+        <br>
+        <span id="timer"></span>
+    </h3>
+</div>
+
+<div class="container ">
+
+    <h1 >{{ quiz.name }}</h1>
+    <form method="POST">
+        <!-- display questions as individual card  -->
+        {% for question in questions %}
+        <div class="card mb-4">
+            <div class="card-body question-card">
+                <h5 class="card-title text-light">{{ question.question }}</h5>
+                <div class="list-group">
+                    <label class="list-group-item option-row" onclick="changeOptionColour(this)">
+                        <input class="form-check-input me-2 question-option" type="radio" name="question_{{ question.id }}" value="1">
+                        {{ question.choice_A }}
+                    </label>
+                    <label class="list-group-item option-row" onclick="changeOptionColour(this)">
+                        <input class="form-check-input me-2 question-option" type="radio" name="question_{{ question.id }}" value="2">
+                        {{ question.choice_B }}
+                    </label>
+                    <label class="list-group-item option-row" onclick="changeOptionColour(this)">
+                        <input class="form-check-input me-2 question-option" type="radio" name="question_{{ question.id }}" value="3">
+                        {{ question.choice_C }}
+                    </label>
+                    <label class="list-group-item option-row" onclick="changeOptionColour(this)">
+                        <input class="form-check-input me-2 question-option" type="radio" name="question_{{ question.id }}" value="4">
+                        {{ question.choice_D }}
+                    </label>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-primary d-block mx-auto " style="margin-bottom: 100px; margin-top: 50px"   onclick="return confirm('Are you sure?')">Submit Quiz</button>
+    </form>
+</div>
+
+
+<script>
+    //colour changing
+    function changeOptionColour(selectedOption) {
+        let parent = selectedOption.parentNode;  
+        let options = parent.getElementsByClassName("option-row");  
+
+        for (let option of options) {
+            option.style.backgroundColor = "";  
+            option.style.color = "";  
+        }
+
+        selectedOption.style.backgroundColor = "#ffc107";  
+        selectedOption.style.color = "black";  
+    }
+
+    //quiz timer
+    document.addEventListener("DOMContentLoaded", function () {
+        let timeLeft = {{ time_limit }} * 60;  
+        let timerElement = document.getElementById("timer");
+    
+        function updateTimer() {
+            let hrs = Math.floor(timeLeft / 3600);
+            let mins = Math.floor((timeLeft%3600)/60);
+            let secs = timeLeft % 60;
+            timerElement.innerHTML = `${hrs}h ${mins}m ${secs}s`;
+    
+            if (timeLeft <= 0) {
+                document.querySelector("form").submit();
+                return;
+            }
+            timeLeft--;
+            setTimeout(updateTimer, 1000);
+        }
+        updateTimer();
+    })
+    
+</script>
+
+{% endblock %}

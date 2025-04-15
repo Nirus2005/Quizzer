@@ -1,0 +1,31 @@
+{% extends "base.html" %} 
+{% block title %}Sign Up{% endblock %} 
+{% block content %}
+<div class="card " style="top:90px; width: 400px; background-color: rgba(0, 0, 0, 0.6); border: none;">
+
+  <h1 class="card-header d-flex justify-content-center text-lightgrey" >Sign Up</h1>
+
+  <form method="POST" class="card-body align-items-center justify-content-center">
+    <div class="form-group ">{{form.hidden_tag()}}</div>
+
+      <div class="form-group">
+        {{form.email(class="form-control")}}
+      </div>
+      
+      <div class="form-group">
+        {{form.username(class="form-control")}}
+        </div>
+
+      <div class="form-group ">
+        {{form.password(class="form-control")}}
+        </div>
+
+      <div class="form-group ">
+        {{form.submit(class="btn btn-primary btn-block")}}
+      </div>
+
+  </form>
+
+  <a href="{{url_for('auth.login')}}" class="text-light d-flex justify-content-center">Already have an account? Log In</a>
+</div>
+{% endblock %}

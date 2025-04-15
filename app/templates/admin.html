@@ -1,0 +1,201 @@
+    {% extends "base.html" %} 
+    {% block title %}Admin Dashboard{% endblock %} 
+    {% block css %} 
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+    {% endblock %}
+    {% block content %}
+
+        <!-- defining AddSubject modal -->
+        <div class="modal fade" id="addSubject" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content bg-dark text-white">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5">Add Subject</h1>
+                        <button type="button" class="btn-close" data-dismiss="modal"></button>
+                    </div>
+                    <form method="POST" action="{{ url_for('admin.add_subject') }}">
+                        {{ subjectForm.hidden_tag() }}
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                {{ subjectForm.name.label(class="form-label") }}
+                                {{ subjectForm.name(class="form-control") }}
+                            </div>
+                            <div class="mb-3">
+                                {{ subjectForm.description.label(class="form-label") }}
+                                {{ subjectForm.description(class="form-control", rows="3") }}
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            {{ subjectForm.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- subjects list -->
+        <div class="container admin-container " style="position: absolute; top: 140px; ">
+            <div class="card-container-header px-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 mt-2 text-light" style="margin-top: 10px;">{{heading}}</h5>
+                <a type="button" class="btn btn-light add-btn text-dark" data-toggle="modal" data-target="#addSubject" id="add-subject" href="/">
+                <span>+ Subject</span>
+                </a>
+            </div>
+            <div class="card shadow-lg p-3" style="background-color: transparent;">
+                {% if subjects %}
+                <div class="row">
+                    {% for subject in subjects %}
+                        <div class="col-lg-6 col-md-6 col-sm-12 mb-4"> 
+                            <div class="card subject-cards">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    {{ subject.name }}
+
+                                    <!-- edit and delete subject -->
+                                    <div class="d-flex " style="gap : 15px;">
+                                        <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editSubject{{ subject.id }}">
+                                            Edit
+                                        </button>
+                                        <form method="POST" action="{{ url_for('admin.delete_subject', subject_id=subject.id) }}" 
+                                        style="display:inline;">
+                                        {{ deleteForm.hidden_tag() }}
+                                        {{ deleteForm.submit(class="btn btn-danger btn-sm", onclick="return confirm('Are you sure?')") }}
+                                        </form>
+                                        <button class="btn btn-light text-dark shadow-sm btn-sm" 
+                                        data-toggle="modal" 
+                                        data-target="#addChapter{{ subject.id }}">
+                                        + Chapter
+                                    </button>
+                                </div>
+                                </div>
+                                <ul class="list-group list-group-flush ">
+                                    <li class="list-group-item subject-cards-rows subject-description text-dark">
+                                        {{ subject.description }}
+                                    </li>
+                                    <div class="chapter-rows">
+                                        <ul class="list-group list-group-flush">
+                                            {% if subject.chapter %}
+                                            {% for chapter in subject.chapter %}
+                                                <li class="list-group-item chapter-name-row text-dark d-flex justify-content-between align-items-center" style="background-color: rgb(217, 213, 213);">
+                                                    <span>
+                                                        {{ chapter.name }}
+                                                    </span>
+                                                    <div class="d-flex " style="gap : 15px;">
+                                                        <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editChapter{{ chapter.id }}">
+                                                            Edit
+                                                        </button>
+                                                        <form method="POST" action="{{ url_for('admin.delete_chapter', chapter_id=chapter.id) }}" 
+                                                        style="display:inline;">
+                                                        {{ deleteForm.hidden_tag() }}
+                                                        {{ deleteForm.submit(class="btn btn-danger btn-sm", onclick="return confirm('Are you sure?')") }}
+                                                        </form>
+                                                    </div>
+                                                </li>
+                                                <!-- edit chapter modal  -->
+                                                <div class="modal fade" id="editChapter{{ chapter.id }}" tabindex="-1">
+                                                    <div class="modal-dialog modal-dialog-centered">
+                                                        <div class="modal-content bg-dark text-white">
+                                                            <div class="modal-header">
+                                                                <h1 class="modal-title fs-5">Edit Chapter</h1>
+                                                                <button type="button" class="btn-close" data-dismiss="modal"></button>
+                                                            </div>
+                                                            <form method="POST" action="{{ url_for('admin.edit_chapter', chapter_id=chapter.id) }}">
+                                                                {{ chapterEditForm.hidden_tag() }}
+                                                                <div class="modal-body">
+                                                                    <div class="mb-3">
+                                                                        {{ chapterEditForm.name.label(class="form-label",) }}
+                                                                        {{ chapterEditForm.name(class="form-control") }}
+                                                                    </div>
+                                                                    <div class="mb-3">
+                                                                        {{ chapterEditForm.description.label(class="form-label") }}
+                                                                        {{ chapterEditForm.description(class="form-control", rows="3") }}
+                                                                    </div>
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                                                    {{ chapterEditForm.submit(class="btn btn-primary") }}
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {% endfor %}
+                                            {% else %}
+                                                <li class="text-center py-1">
+                                                    <h5 class="text-muted">No chapters added.</h5>
+                                                </li>
+                                            {%endif%}
+                                        </ul>
+                                    </div>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- defining add chapter modal  -->
+                        <div class="modal fade" id="addChapter{{ subject.id }}" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content bg-dark text-white">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5">Add Chapter</h1>
+                                        <button type="button" class="btn-close" data-dismiss="modal"></button>
+                                    </div>
+                                    <form method="POST" action="{{ url_for('admin.add_chapter', subject_id=subject.id) }}">
+                                        {{ chapterForm.hidden_tag() }}
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                {{ chapterForm.name.label(class="form-label") }}
+                                                {{ chapterForm.name(class="form-control") }}
+                                            </div>
+                                            <div class="mb-3">
+                                                {{ chapterForm.description.label(class="form-label") }}
+                                                {{ chapterForm.description(class="form-control", rows="3") }}
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                            {{ chapterForm.submit(class="btn btn-primary") }}
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- edit subject modal  -->
+                        <div class="modal fade" id="editSubject{{ subject.id }}" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content bg-dark text-white">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5">Edit Subject</h1>
+                                        <button type="button" class="btn-close" data-dismiss="modal"></button>
+                                    </div>
+                                    <form method="POST" action="{{ url_for('admin.edit_subject', subject_id=subject.id) }}">
+                                        {{ subjectEditForm.hidden_tag() }}
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                {{ subjectEditForm.name.label(class="form-label",) }}
+                                                {{ subjectEditForm.name(class="form-control") }}
+                                            </div>
+                                            <div class="mb-3">
+                                                {{ subjectEditForm.description.label(class="form-label") }}
+                                                {{ subjectEditForm.description(class="form-control", rows="3") }}
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                            {{ subjectEditForm.submit(class="btn btn-primary") }}
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <h5 class="text-muted">No subjects added.</h5>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+

@@ -1,0 +1,154 @@
+body{
+    background-image:url('https://c4.wallpaperflare.com/wallpaper/344/20/1/abstract-black-white-solar-system-space-hd-wallpaper-preview.jpg');
+    background-size: cover;
+    background-position: center;
+    height:100vh;
+    background-attachment : fixed;
+    overflow:hidden;
+}
+
+.alert-container{
+    position: fixed;
+    top: 80px;
+}
+
+.alert {
+    position: fixed;
+    color: #ffffff;  
+    border: none;
+    left: 10px;
+    max-height: 40px;
+    padding-top: 5px;
+}
+
+.alert-success{
+    background-color: rgb(2, 92, 2);
+}
+.alert-danger{
+    background-color: red;
+}
+.alert-info{
+    background-color: rgba(0, 125, 213, 0.843);
+}
+
+.add-btn {
+    position: fixed;
+    width: 170px;  
+    height: 35px;
+    font-size: 24px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    border: none;
+    margin-bottom: 2px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.add-btn:hover {
+    background-color: rgb(220, 220, 220);
+    box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.4); 
+}
+
+.login-card{
+    width: 400px; 
+    background-color: rgba(0, 0, 0, 0.6); 
+    border: none;
+}
+
+.cursive{
+    font-family: cursive;
+}
+
+.subject-cards{
+    background-color:grey;
+    color: black;
+    width: 100%;
+    transition: width 0.4s ease-in-out;
+}
+
+.subject-description{
+    text-align: center;
+    background-color: rgb(216, 216, 216);
+}
+
+.subject-cards-heading {
+    width: 100%;
+}
+
+@media (max-width: 992px) { 
+.subject-cards {
+    width: 90%;
+}
+}
+
+@media (max-width: 768px) { 
+.subject-cards {
+    width: 100%;
+}
+}
+
+
+.card-container-header{
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    opacity: 1;
+    height: 50px;
+    text-align: left;
+    padding-top: 4px;
+    padding-left: 40px;
+    color: white;
+    display: flex;
+    align-items:center;
+    justify-content: space-between; 
+    
+}
+
+.card-container-header h5 {
+    font-size: 26px;
+    font-weight: bold;
+    padding-bottom: 12px;
+}
+
+.question-card{
+    background-color: rgba(31, 29, 29, 0.933);
+    border-radius: 10px;
+    border: none;
+}
+
+.question-card label{
+    border-radius: 10px;
+    background-color: rgb(86, 82, 82);
+    transition: background-color 0.2s ease;
+    
+}
+
+.question-option{
+    display: none;
+}
+
+.container{
+    max-width: 900px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 20px;
+}
+
+.container h1   {
+    text-align: center;
+    padding-bottom: 25px;
+}
+
+#timer-container{
+    position: fixed;  
+    bottom: 50px;     
+    right: 25px;      
+    background-color: transparent; 
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 9999;   
+}

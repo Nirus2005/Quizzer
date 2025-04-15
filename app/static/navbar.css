@@ -1,0 +1,26 @@
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgba(0, 0, 0, 0.8);
+    height: 70px;
+    padding: 0 20px;
+}
+
+.nav-item{
+    margin: 10px;
+}
+
+.logout{
+    position: absolute;
+    right: 20px;
+    width: 75px;
+    text-align: center
+}
+
+.nav-right{
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}

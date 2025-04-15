@@ -1,0 +1,58 @@
+{% extends "base.html" %} 
+
+{% block title %}Admin - Quizzes{% endblock %} 
+
+{% block css %} 
+<link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+{% endblock %}
+
+{% block content %}
+    
+<div class="container admin-container " style="position: absolute; top: 140px; ">
+    <div class="card-container-header px-3 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 mt-2 text-light" style="margin-top: 10px;">{{heading}}</h5>
+    </div>
+    <div class="card shadow-lg p-3" style="background-color: transparent;">
+        {% if users %}
+        <div class="row">
+            {% for user in users %}
+                <div class="col-lg-6 col-md-6 col-sm-12 mb-4"> 
+                    <div class="card subject-cards">
+                        <div class="card-header d-flex justify-content-between align-items-center" style="font-size: large;">
+                            <span>{{ user.username }}</span>
+                            <span>{{ user.email }}</span>
+                        </div>
+                        <div class="card-body">
+                            {% if user_attempts[user.id] %}
+                                <ul class="list-group list-group-flush">
+                                    {% for quiz,id, score, total_questions in user_attempts[user.id] %}
+                                    <li style="list-style: none;" class="d-flex justify-content-between align-items-center">
+                                        <span>{{ quiz }} </span>  
+                                        <div class="d-flex align-items-center">
+                                            <div class="mr-3">Score: {{ score }} / {{ total_questions }}</div>
+                                            <a href="{{ url_for('admin.admin_quiz_result', user_id=user.id, quiz_id=id) }}" class="btn btn-primary btn-sm my-1">View</a>
+                                            
+                                        </div>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <h5 class="text-muted text-center">No attempts yet</h5>
+                            {% endif %}
+                        
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {%else%}
+        <li class="text-center py-1">
+            <h5 class="text-muted">No users yet</h5>
+        </li>
+        {%endif%}
+    </div>
+</div>
+
+
+
+
+{% endblock %}

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='navbar.css') }}">
+
+    {% block css %}{% endblock %}
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <title>{% block title %}Base{% endblock %}</title>
+</head>
+<body class="text-white">
+
+
+  {% include "navbar.html" %}
+
+  <!-- welcome message-->
+  <div class="container-fluid mt-2 ">
+        <div class="d-flex justify-content-end">
+            <p class="fw-bold text-white">
+                {% if current_user.is_authenticated and not request.path.startswith('/take-quiz/') %}
+                  {%if current_user.is_admin%}
+                    Welcome, Admin!
+                  {% else %}
+                    Welcome, {{ current_user.username }}!
+                  {% endif %}
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+  <!-- alert section - flash messages-->
+   <div class="alert-container">
+  {% with messages = get_flashed_messages(with_categories=true) %} 
+      {% if messages %} 
+        {% for category, message in messages %} 
+          {% if category == 'error' %}
+            <div class="alert alert-danger" role="alert">
+              {{ message }}
+            </div>
+          {% elif category == 'success' %}
+            <div class="alert alert-success" role="alert">
+              {{ message }}
+            </div>
+          {% else %}
+            <div class="alert alert-info" role="alert">
+              {{ message }}
+            </div>
+          {% endif %} 
+        {% endfor %} 
+      {% endif %} 
+    {% endwith %}
+    </div>
+
+    <!-- content block -->
+    <div data-bs-theme="dark" class="container d-flex justify-content-center align-items-center min-vh-50 text-white" style="bottom: 200px;">
+      {% block content %}
+      <div class="row w-75 mt-5" >
+        <div class="col-md-7">
+          <br>
+          <br>
+           <h2 class="display-5 mb-0">Welcome to</h2>
+           <h1 class="display-4 cursive">Quizzer</h1>
+            <p class="lead">
+               Lorem ipsum dolor sit amet consectetur adipisicing elit. Eaque, soluta? Minima commodi fuga placeat debitis excepturi ipsum iure iste unde! Quam, ratione? Eveniet in possimus animi numquam labore dolorem doloremque.
+            </p>
+         </div>
+          
+        <div class="col-md-5 d-flex flex-column align-items-center justify-content-center">
+          <div class="d-flex flex-column w-75">
+            <a href="/login" class="btn btn-primary btn-lg mb-4">Login</a>
+            <a href="/signup" class="btn btn-primary btn-lg">Signup</a>
+          </div>
+        </div>
+      </div>
+      {% endblock %}
+    </div>
+
+
+    <!-- jquery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.js" integrity="sha512-+k1pnlgt4F1H8L7t3z95o3/KO+o78INEcXTbnoJQ/F2VqDVhWoaiVml/OEHv9HsVgxUaVW+IbiZPUJQfF/YxZw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- popper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"></script>
+
+    <!-- bootstrap js -->
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- auto remove the alerts  -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function(){
+        let alerts = document.querySelectorAll(".alert");
+        alerts.forEach(function(alert){
+          setTimeout(function(){
+            alert.style.transition="opacity 0.5s ease";
+            alert.style.opacity = "0"
+
+            setTimeout(()=>alert.remove(), 500)
+          }, 3000)
+        })
+      })
+    </script>    
+    {% block scripts %}{% endblock %}
+
+</body>
+</html>
