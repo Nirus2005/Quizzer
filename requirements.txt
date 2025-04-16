@@ -4,3 +4,4 @@ Flask-WTF
 WTForms
 Flask-Bcrypt
 Flask-SQLAlchemy
+gunicorn
